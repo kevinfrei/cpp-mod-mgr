@@ -1,0 +1,57 @@
+{
+  "version": 8,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Ninja Debug",
+      "description": "Sets Ninja generator, compilers, x64 architecture, build and install directory, debug build type",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/Debug/",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "config/conan_provider.cmake"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Ninja Release",
+      "description": "Sets Ninja generator, compilers, x64 architecture, build and install directory, release build type",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/Release/",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "config/conan_provider.cmake"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Ninja Debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "Ninja Release",
+      "configurePreset": "release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "output": { "outputOnFailure": true },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": { "outputOnFailure": true },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    }
+  ]
+}
