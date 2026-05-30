@@ -9,6 +9,6 @@ target_sources(
   FILES
     CommonTypes.cppm crow_pickling.cppm
 )
-target_link_libraries(ipc_module PRIVATE ${CROW_LIB})
+target_link_libraries(ipc_module PUBLIC ${CROW_LIB})
 
-# add_subdirectory(test)
+add_subdirectory(test)
