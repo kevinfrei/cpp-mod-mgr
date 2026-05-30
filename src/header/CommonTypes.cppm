@@ -1,0 +1,743 @@
+module;
+
+#include <crow/json.h>
+
+export module ts_cpp_idl.common_types;
+
+import std;
+import ts_cpp_idl.crow_support;
+
+export {
+  namespace Shared {
+
+  template <typename T>
+  constexpr std::optional<T> from_string(std::string_view str);
+
+#pragma region string enum Keys
+
+  enum class Keys { Find, Settings, Next, Prev, Tools };
+
+  inline constexpr bool is_valid(Keys _value) {
+    switch (_value) {
+      case Keys::Find:
+      case Keys::Settings:
+      case Keys::Next:
+      case Keys::Prev:
+      case Keys::Tools:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  inline constexpr std::string_view to_string(Keys _value) {
+    switch (_value) {
+      case Keys::Find:
+        return "F";
+      case Keys::Settings:
+        return ",";
+      case Keys::Next:
+        return "Right";
+      case Keys::Prev:
+        return "Left";
+      case Keys::Tools:
+        return "L";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  // This is *super* simplistic, and should be optimized, cuz this is bad.
+  // A deeply nested switch statement would be pretty fun to generate...
+  template <>
+  inline constexpr std::optional<Keys> from_string<Keys>(std::string_view str) {
+    if (str == "F")
+      return Keys::Find;
+    if (str == ",")
+      return Keys::Settings;
+    if (str == "Right")
+      return Keys::Next;
+    if (str == "Left")
+      return Keys::Prev;
+    if (str == "L")
+      return Keys::Tools;
+    return std::nullopt;
+  }
+
+#pragma endregion string enum Keys
+
+#pragma region string enum StrId
+
+  enum class StrId {
+    FilePath,
+    FilesSelected,
+    ErrNotSingleAndNotMultiple,
+    ErrSingleAndMultiple,
+    ViewSettings,
+    ViewTools
+  };
+
+  inline constexpr bool is_valid(StrId _value) {
+    switch (_value) {
+      case StrId::FilePath:
+      case StrId::FilesSelected:
+      case StrId::ErrNotSingleAndNotMultiple:
+      case StrId::ErrSingleAndMultiple:
+      case StrId::ViewSettings:
+      case StrId::ViewTools:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  inline constexpr std::string_view to_string(StrId _value) {
+    switch (_value) {
+      case StrId::FilePath:
+        return "File Path";
+      case StrId::FilesSelected:
+        return "Files Selected";
+      case StrId::ErrNotSingleAndNotMultiple:
+        return "Not Single and not Multiple (This is a bug!)";
+      case StrId::ErrSingleAndMultiple:
+        return "Both Single and Multiple (This is a bug!)";
+      case StrId::ViewSettings:
+        return "Settings";
+      case StrId::ViewTools:
+        return "Tools";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  // This is *super* simplistic, and should be optimized, cuz this is bad.
+  // A deeply nested switch statement would be pretty fun to generate...
+  template <>
+  inline constexpr std::optional<StrId> from_string<StrId>(
+      std::string_view str) {
+    if (str == "File Path")
+      return StrId::FilePath;
+    if (str == "Files Selected")
+      return StrId::FilesSelected;
+    if (str == "Not Single and not Multiple (This is a bug!)")
+      return StrId::ErrNotSingleAndNotMultiple;
+    if (str == "Both Single and Multiple (This is a bug!)")
+      return StrId::ErrSingleAndMultiple;
+    if (str == "Settings")
+      return StrId::ViewSettings;
+    if (str == "Tools")
+      return StrId::ViewTools;
+    return std::nullopt;
+  }
+
+#pragma endregion string enum StrId
+
+#pragma region linear enum CurrentView
+  enum class CurrentView {
+    disabled = -1,
+    none = 0,
+    settings = 1,
+    tools = 2,
+    search = 3,
+  };
+
+  inline constexpr bool is_valid(CurrentView _value) {
+    switch (_value) {
+      case CurrentView::disabled:
+      case CurrentView::none:
+      case CurrentView::settings:
+      case CurrentView::tools:
+      case CurrentView::search:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  inline constexpr std::string_view to_name(CurrentView _value) {
+    switch (_value) {
+      case CurrentView::disabled:
+        return "disabled";
+      case CurrentView::none:
+        return "none";
+      case CurrentView::settings:
+        return "settings";
+      case CurrentView::tools:
+        return "tools";
+      case CurrentView::search:
+        return "search";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  inline constexpr std::string_view to_string(CurrentView _value) {
+    switch (_value) {
+      case CurrentView::disabled:
+        return "-1";
+      case CurrentView::none:
+        return "0";
+      case CurrentView::settings:
+        return "1";
+      case CurrentView::tools:
+        return "2";
+      case CurrentView::search:
+        return "3";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  template <>
+  inline constexpr std::optional<CurrentView> from_string<CurrentView>(
+      std::string_view _str) {
+    int _val;
+    auto [ptr, ec] =
+        std::from_chars(_str.data(), _str.data() + _str.size(), _val);
+    if (ec != std::errc{}) {
+      return std::nullopt;
+    }
+    CurrentView _res = static_cast<CurrentView>(_val);
+    if (is_valid(_res))
+      return _res;
+    return std::nullopt;
+  }
+
+#pragma endregion linear enum CurrentView
+
+#pragma region linear enum IpcCall
+  enum class IpcCall : std::uint8_t {
+    Unknown = 0,
+    ReadFromStorage = 1,
+    WriteToStorage = 2,
+    DeleteFromStorage = 3,
+    MinimizeWindow = 4,
+    MaximizeWindow = 5,
+    RestoreWindow = 6,
+    CloseWindow = 7,
+    IsDev = 8,
+    AsyncData = 9,
+    MenuAction = 10,
+    ShowOpenDialog = 11,
+    GetFileSystemRoots = 12,
+    GetNamedLocations = 13,
+    GetFolderContents = 14,
+  };
+
+  inline constexpr bool is_valid(IpcCall _value) {
+    switch (_value) {
+      case IpcCall::Unknown:
+      case IpcCall::ReadFromStorage:
+      case IpcCall::WriteToStorage:
+      case IpcCall::DeleteFromStorage:
+      case IpcCall::MinimizeWindow:
+      case IpcCall::MaximizeWindow:
+      case IpcCall::RestoreWindow:
+      case IpcCall::CloseWindow:
+      case IpcCall::IsDev:
+      case IpcCall::AsyncData:
+      case IpcCall::MenuAction:
+      case IpcCall::ShowOpenDialog:
+      case IpcCall::GetFileSystemRoots:
+      case IpcCall::GetNamedLocations:
+      case IpcCall::GetFolderContents:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  inline constexpr std::string_view to_name(IpcCall _value) {
+    switch (_value) {
+      case IpcCall::Unknown:
+        return "Unknown";
+      case IpcCall::ReadFromStorage:
+        return "ReadFromStorage";
+      case IpcCall::WriteToStorage:
+        return "WriteToStorage";
+      case IpcCall::DeleteFromStorage:
+        return "DeleteFromStorage";
+      case IpcCall::MinimizeWindow:
+        return "MinimizeWindow";
+      case IpcCall::MaximizeWindow:
+        return "MaximizeWindow";
+      case IpcCall::RestoreWindow:
+        return "RestoreWindow";
+      case IpcCall::CloseWindow:
+        return "CloseWindow";
+      case IpcCall::IsDev:
+        return "IsDev";
+      case IpcCall::AsyncData:
+        return "AsyncData";
+      case IpcCall::MenuAction:
+        return "MenuAction";
+      case IpcCall::ShowOpenDialog:
+        return "ShowOpenDialog";
+      case IpcCall::GetFileSystemRoots:
+        return "GetFileSystemRoots";
+      case IpcCall::GetNamedLocations:
+        return "GetNamedLocations";
+      case IpcCall::GetFolderContents:
+        return "GetFolderContents";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  inline constexpr std::string_view to_string(IpcCall _value) {
+    switch (_value) {
+      case IpcCall::Unknown:
+        return "0";
+      case IpcCall::ReadFromStorage:
+        return "1";
+      case IpcCall::WriteToStorage:
+        return "2";
+      case IpcCall::DeleteFromStorage:
+        return "3";
+      case IpcCall::MinimizeWindow:
+        return "4";
+      case IpcCall::MaximizeWindow:
+        return "5";
+      case IpcCall::RestoreWindow:
+        return "6";
+      case IpcCall::CloseWindow:
+        return "7";
+      case IpcCall::IsDev:
+        return "8";
+      case IpcCall::AsyncData:
+        return "9";
+      case IpcCall::MenuAction:
+        return "10";
+      case IpcCall::ShowOpenDialog:
+        return "11";
+      case IpcCall::GetFileSystemRoots:
+        return "12";
+      case IpcCall::GetNamedLocations:
+        return "13";
+      case IpcCall::GetFolderContents:
+        return "14";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  template <>
+  inline constexpr std::optional<IpcCall> from_string<IpcCall>(
+      std::string_view _str) {
+    std::uint8_t _val;
+    auto [ptr, ec] =
+        std::from_chars(_str.data(), _str.data() + _str.size(), _val);
+    if (ec != std::errc{}) {
+      return std::nullopt;
+    }
+    IpcCall _res = static_cast<IpcCall>(_val);
+    if (is_valid(_res))
+      return _res;
+    return std::nullopt;
+  }
+
+#pragma endregion linear enum IpcCall
+
+#pragma region numeric enum SocketMsg
+  enum class SocketMsg : std::uint8_t { Unknown, ContentLoaded, KeepAlive };
+
+  inline constexpr bool is_valid(SocketMsg _value) {
+    switch (_value) {
+      case SocketMsg::Unknown:
+      case SocketMsg::ContentLoaded:
+      case SocketMsg::KeepAlive:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  inline constexpr std::string_view to_name(SocketMsg _value) {
+    switch (_value) {
+      case SocketMsg::Unknown:
+        return "Unknown";
+      case SocketMsg::ContentLoaded:
+        return "ContentLoaded";
+      case SocketMsg::KeepAlive:
+        return "KeepAlive";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  // Could be itoa with a cast, but string_view's...
+  inline constexpr std::string_view to_string(SocketMsg _value) {
+    switch (_value) {
+      case SocketMsg::Unknown:
+        return "0";
+      case SocketMsg::ContentLoaded:
+        return "1";
+      case SocketMsg::KeepAlive:
+        return "2";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  template <>
+  inline constexpr std::optional<SocketMsg> from_string<SocketMsg>(
+      std::string_view _str) {
+    std::uint8_t _val;
+    auto [ptr, ec] =
+        std::from_chars(_str.data(), _str.data() + _str.size(), _val);
+    if (ec != std::errc{}) {
+      return std::nullopt;
+    }
+    SocketMsg _res = static_cast<SocketMsg>(_val);
+    if (is_valid(_res))
+      return _res;
+    return std::nullopt;
+  }
+
+#pragma endregion numeric enum SocketMsg
+
+#pragma region string enum StorageId
+
+  enum class StorageId { CurrentView, SettingValue };
+
+  inline constexpr bool is_valid(StorageId _value) {
+    switch (_value) {
+      case StorageId::CurrentView:
+      case StorageId::SettingValue:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  inline constexpr std::string_view to_string(StorageId _value) {
+    switch (_value) {
+      case StorageId::CurrentView:
+        return "currentView";
+      case StorageId::SettingValue:
+        return "someSetting";
+      default:
+        return "<unknown>";
+    }
+  }
+
+  // This is *super* simplistic, and should be optimized, cuz this is bad.
+  // A deeply nested switch statement would be pretty fun to generate...
+  template <>
+  inline constexpr std::optional<StorageId> from_string<StorageId>(
+      std::string_view str) {
+    if (str == "currentView")
+      return StorageId::CurrentView;
+    if (str == "someSetting")
+      return StorageId::SettingValue;
+    return std::nullopt;
+  }
+
+#pragma endregion string enum StorageId
+
+  struct MimeData {
+    std::string type;
+    std::string data;
+  };
+
+  struct FileFilterItem {
+    std::string name;
+    std::vector<std::string> extensions;
+  };
+
+  struct OpenDialogOptions {
+    std::optional<bool> folder;
+    std::optional<std::string> title;
+    std::optional<std::string> defaultPath;
+    std::optional<std::string> buttonLabel;
+    std::optional<bool> multiSelections;
+    std::optional<std::vector<FileFilterItem>> filters;
+  };
+  using NamedLocations = std::map<std::string, std::string>;
+
+  struct FileSystemItem {
+    std::string file;
+    double date;
+    std::uint64_t size;
+    std::string type;
+  };
+  using FolderContents = std::vector<FileSystemItem>;
+
+  } // namespace Shared
+#pragma region JSON serialization for string enum Keys
+  template <>
+  inline crow::json::wvalue to_json<Shared::Keys>(Shared::Keys _value) {
+    return to_json(to_string(_value));
+  }
+  template <>
+  struct impl_from_json<Shared::Keys> {
+    static inline std::optional<Shared::Keys> process(
+        const crow::json::rvalue& _value) {
+      if (_value.t() != crow::json::type::String)
+        return std::nullopt;
+      auto _str = _value.s();
+      return Shared::from_string<Shared::Keys>(
+          std::string_view{_str.begin(), _str.size()});
+    }
+  };
+#pragma endregion JSON serialization for string enum Keys
+#pragma region JSON serialization for string enum StrId
+  template <>
+  inline crow::json::wvalue to_json<Shared::StrId>(Shared::StrId _value) {
+    return to_json(to_string(_value));
+  }
+  template <>
+  struct impl_from_json<Shared::StrId> {
+    static inline std::optional<Shared::StrId> process(
+        const crow::json::rvalue& _value) {
+      if (_value.t() != crow::json::type::String)
+        return std::nullopt;
+      auto _str = _value.s();
+      return Shared::from_string<Shared::StrId>(
+          std::string_view{_str.begin(), _str.size()});
+    }
+  };
+#pragma endregion JSON serialization for string enum StrId
+#pragma region JSON serialization for string enum StorageId
+  template <>
+  inline crow::json::wvalue to_json<Shared::StorageId>(
+      Shared::StorageId _value) {
+    return to_json(to_string(_value));
+  }
+  template <>
+  struct impl_from_json<Shared::StorageId> {
+    static inline std::optional<Shared::StorageId> process(
+        const crow::json::rvalue& _value) {
+      if (_value.t() != crow::json::type::String)
+        return std::nullopt;
+      auto _str = _value.s();
+      return Shared::from_string<Shared::StorageId>(
+          std::string_view{_str.begin(), _str.size()});
+    }
+  };
+#pragma endregion JSON serialization for string enum StorageId
+
+#pragma region JSON serialization for object MimeData
+  template <>
+  struct impl_to_json<Shared::MimeData> {
+    static inline crow::json::wvalue process(const Shared::MimeData& _value) {
+      crow::json::wvalue _res;
+      _res["type"] = to_json(_value.type);
+      _res["data"] = to_json(_value.data);
+
+      return _res;
+    }
+  };
+
+  template <>
+  inline std::optional<Shared::MimeData> from_json<Shared::MimeData>(
+      const crow::json::rvalue& _value) {
+    if (_value.t() != crow::json::type::Object)
+      return std::nullopt;
+    Shared::MimeData _res;
+
+    if (!_value.has("type"))
+      return std::nullopt;
+    auto _type_opt_ = from_json<std::string>(_value["type"]);
+    if (!_type_opt_.has_value())
+      return std::nullopt;
+    _res.type = std::move(*_type_opt_);
+
+    if (!_value.has("data"))
+      return std::nullopt;
+    auto _data_opt_ = from_json<std::string>(_value["data"]);
+    if (!_data_opt_.has_value())
+      return std::nullopt;
+    _res.data = std::move(*_data_opt_);
+
+    return _res;
+  }
+#pragma endregion JSON serialization for object MimeData
+
+#pragma region JSON serialization for object FileFilterItem
+  template <>
+  struct impl_to_json<Shared::FileFilterItem> {
+    static inline crow::json::wvalue process(
+        const Shared::FileFilterItem& _value) {
+      crow::json::wvalue _res;
+      _res["name"] = to_json(_value.name);
+      _res["extensions"] = to_json(_value.extensions);
+
+      return _res;
+    }
+  };
+
+  template <>
+  inline std::optional<Shared::FileFilterItem>
+  from_json<Shared::FileFilterItem>(const crow::json::rvalue& _value) {
+    if (_value.t() != crow::json::type::Object)
+      return std::nullopt;
+    Shared::FileFilterItem _res;
+
+    if (!_value.has("name"))
+      return std::nullopt;
+    auto _name_opt_ = from_json<std::string>(_value["name"]);
+    if (!_name_opt_.has_value())
+      return std::nullopt;
+    _res.name = std::move(*_name_opt_);
+
+    if (!_value.has("extensions"))
+      return std::nullopt;
+    auto _extensions_opt_ =
+        from_json<std::vector<std::string>>(_value["extensions"]);
+    if (!_extensions_opt_.has_value())
+      return std::nullopt;
+    _res.extensions = std::move(*_extensions_opt_);
+
+    return _res;
+  }
+#pragma endregion JSON serialization for object FileFilterItem
+
+#pragma region JSON serialization for object OpenDialogOptions
+  template <>
+  struct impl_to_json<Shared::OpenDialogOptions> {
+    static inline crow::json::wvalue process(
+        const Shared::OpenDialogOptions& _value) {
+      crow::json::wvalue _res;
+
+      if (_value.folder) {
+        _res["folder"] = to_json(*_value.folder);
+      }
+      if (_value.title) {
+        _res["title"] = to_json(*_value.title);
+      }
+      if (_value.defaultPath) {
+        _res["defaultPath"] = to_json(*_value.defaultPath);
+      }
+      if (_value.buttonLabel) {
+        _res["buttonLabel"] = to_json(*_value.buttonLabel);
+      }
+      if (_value.multiSelections) {
+        _res["multiSelections"] = to_json(*_value.multiSelections);
+      }
+      if (_value.filters) {
+        _res["filters"] = to_json(*_value.filters);
+      }
+      return _res;
+    }
+  };
+
+  template <>
+  inline std::optional<Shared::OpenDialogOptions>
+  from_json<Shared::OpenDialogOptions>(const crow::json::rvalue& _value) {
+    if (_value.t() != crow::json::type::Object)
+      return std::nullopt;
+    Shared::OpenDialogOptions _res;
+
+    if (_value.has("folder")) {
+      auto _folder_opt_ = from_json<bool>(_value["folder"]);
+      if (!_folder_opt_.has_value())
+        return std::nullopt;
+      _res.folder = std::move(*_folder_opt_);
+    } else {
+      _res.folder = std::nullopt;
+    }
+
+    if (_value.has("title")) {
+      auto _title_opt_ = from_json<std::string>(_value["title"]);
+      if (!_title_opt_.has_value())
+        return std::nullopt;
+      _res.title = std::move(*_title_opt_);
+    } else {
+      _res.title = std::nullopt;
+    }
+
+    if (_value.has("defaultPath")) {
+      auto _defaultPath_opt_ = from_json<std::string>(_value["defaultPath"]);
+      if (!_defaultPath_opt_.has_value())
+        return std::nullopt;
+      _res.defaultPath = std::move(*_defaultPath_opt_);
+    } else {
+      _res.defaultPath = std::nullopt;
+    }
+
+    if (_value.has("buttonLabel")) {
+      auto _buttonLabel_opt_ = from_json<std::string>(_value["buttonLabel"]);
+      if (!_buttonLabel_opt_.has_value())
+        return std::nullopt;
+      _res.buttonLabel = std::move(*_buttonLabel_opt_);
+    } else {
+      _res.buttonLabel = std::nullopt;
+    }
+
+    if (_value.has("multiSelections")) {
+      auto _multiSelections_opt_ = from_json<bool>(_value["multiSelections"]);
+      if (!_multiSelections_opt_.has_value())
+        return std::nullopt;
+      _res.multiSelections = std::move(*_multiSelections_opt_);
+    } else {
+      _res.multiSelections = std::nullopt;
+    }
+
+    if (_value.has("filters")) {
+      auto _filters_opt_ =
+          from_json<std::vector<Shared::FileFilterItem>>(_value["filters"]);
+      if (!_filters_opt_.has_value())
+        return std::nullopt;
+      _res.filters = std::move(*_filters_opt_);
+    } else {
+      _res.filters = std::nullopt;
+    }
+    return _res;
+  }
+#pragma endregion JSON serialization for object OpenDialogOptions
+
+#pragma region JSON serialization for object FileSystemItem
+  template <>
+  struct impl_to_json<Shared::FileSystemItem> {
+    static inline crow::json::wvalue process(
+        const Shared::FileSystemItem& _value) {
+      crow::json::wvalue _res;
+      _res["file"] = to_json(_value.file);
+      _res["date"] = to_json(_value.date);
+      _res["size"] = to_json(_value.size);
+      _res["type"] = to_json(_value.type);
+
+      return _res;
+    }
+  };
+
+  template <>
+  inline std::optional<Shared::FileSystemItem>
+  from_json<Shared::FileSystemItem>(const crow::json::rvalue& _value) {
+    if (_value.t() != crow::json::type::Object)
+      return std::nullopt;
+    Shared::FileSystemItem _res;
+
+    if (!_value.has("file"))
+      return std::nullopt;
+    auto _file_opt_ = from_json<std::string>(_value["file"]);
+    if (!_file_opt_.has_value())
+      return std::nullopt;
+    _res.file = std::move(*_file_opt_);
+
+    if (!_value.has("date"))
+      return std::nullopt;
+    auto _date_opt_ = from_json<double>(_value["date"]);
+    if (!_date_opt_.has_value())
+      return std::nullopt;
+    _res.date = std::move(*_date_opt_);
+
+    if (!_value.has("size"))
+      return std::nullopt;
+    auto _size_opt_ = from_json<std::uint64_t>(_value["size"]);
+    if (!_size_opt_.has_value())
+      return std::nullopt;
+    _res.size = std::move(*_size_opt_);
+
+    if (!_value.has("type"))
+      return std::nullopt;
+    auto _type_opt_ = from_json<std::string>(_value["type"]);
+    if (!_type_opt_.has_value())
+      return std::nullopt;
+    _res.type = std::move(*_type_opt_);
+
+    return _res;
+  }
+#pragma endregion JSON serialization for object FileSystemItem
+}

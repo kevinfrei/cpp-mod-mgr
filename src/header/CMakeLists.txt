@@ -1,7 +1,14 @@
-# This is just a couple headers, but I like the componentization of
-# having a separate CMake target for it.
-add_library(ipc_lib INTERFACE CommonTypes.hpp)
-target_include_directories(ipc_lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(ipc_lib INTERFACE ${CROW_LIB})
+# This was just a couple headers, but now it should be a couple *modules*
 
-add_subdirectory(test)
+add_library(ipc_module)
+target_sources(
+  ipc_module
+  PUBLIC
+  FILE_SET
+  CXX_MODULES
+  FILES
+    CommonTypes.cppm crow_pickling.cppm
+)
+target_link_libraries(ipc_module PRIVATE ${CROW_LIB})
+
+# add_subdirectory(test)
