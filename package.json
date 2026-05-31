@@ -28,7 +28,11 @@
     "run": "bun run drun && bun run rrun",
     "*-*": "Helper to do OS-specific things",
     "os": "bun run config/os.ts",
-    "prepare": "bunx simple-git-hooks"
+    "prepare": "bunx simple-git-hooks",
+    "****": "Stuff related to modules:",
+    "mod:help": "bun run config/build-std-modules.ts help",
+    "mod:chk": "bun run config/build-std-modules.ts config",
+    "mod:bld": "bun run config/build-std-modules.ts demand_std"
   },
   "simple-git-hooks": {
     "pre-commit": "bunx lint-staged",
