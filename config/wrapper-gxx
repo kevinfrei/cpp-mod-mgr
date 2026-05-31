@@ -1,0 +1,4 @@
+#!/bin/bash
+REAL_GCC="/usr/local/gcc-16/bin/g++"
+exec "$REAL_GCC" "$@" -fmodule-mapper="|@g++-mapper-server -r $HOME/.gcm-cache"
+

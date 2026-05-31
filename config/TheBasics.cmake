@@ -20,13 +20,6 @@ if(MSVC)
   )
   add_compile_options(/EHsc /W4 /std:c++latest)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    # Let's try STL as a module. This is so abusive to users. Why can't the
-    # compiler actually build the .ifc/.pcm file as needed and cache the thing?
-    # Oh, because compiler people think they're the smartest engineers on the
-    # planet, but can't figure out how to make a !@#$ing file cache, so they
-    # define the problem away as as 'build configuration'.
-    #
-    # Narrator: Kevin was, in fact, also a compiler person...
     add_compile_options(
       /reference
       "std=$ENV{VCToolsInstallDir}modules\\MTd\\std.ifc"
@@ -67,6 +60,7 @@ else()
   # Define TARGET_OS for the OS-specific code in tools_lib
   if(UNIX AND NOT APPLE)
     set(TARGET_OS linux)
+    add_compile_options(-fmodules)
   elseif(APPLE)
     add_compile_options(
       "-fmodule-file=std=/opt/homebrew/opt/llvm/share/libc++/v1/std.pcm"
