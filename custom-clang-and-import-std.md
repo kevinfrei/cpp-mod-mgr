@@ -3,77 +3,22 @@
 First, `brew install llvm`. LLVM is a "keg-only" installation. You have to
 trigger its usage manually. Currently, here's the output of the installation
 command, just to have it around:
+[Homebrew Output](homebrew.md)
 
-### Start the Homebrew output:
+That's stuff's got all the details.
 
-CLANG_CONFIG_FILE_SYSTEM_DIR: /opt/homebrew/etc/clang
-CLANG_CONFIG_FILE_USER_DIR: ~/.config/clang
-
-LLD is now provided in a separate formula: `brew install lld`
-
-Using `clang`, `clang++`, etc., requires a CLT installation at
-`/Library/Developer/CommandLineTools`. If you don't want to install the CLT, you
-can write appropriate configuration files pointing to your SDK at
-`~/.config/clang`.
-
-To use the bundled libunwind please use the following LDFLAGS:
+TL;DR: I just dumped this into my .zshrc file:
 
 ```sh
-LDFLAGS="-L/opt/homebrew/opt/llvm/lib/unwind -lunwind"
-```
-
-To use the bundled libc++ please use the following LDFLAGS:
-
-```sh
-LDFLAGS="-L/opt/homebrew/opt/llvm/lib/c++ -L/opt/homebrew/opt/llvm/lib/unwind -lunwind"
-```
-
-Features newer than system libc++ will require the following define to enable
-(support for this may be removed in a future major LLVM release):
-
-```sh
-CPPFLAGS="-D_LIBCPP_DISABLE_AVAILABILITY"
-```
-
-NOTE: You probably want to use the libunwind and libc++ provided by macOS unless
-you know what you're doing.
-
-llvm is keg-only, which means it was not symlinked into /opt/homebrew, because
-macOS already provides this software and installing another version in parallel
-can cause all kinds of trouble.
-
-If you need to have llvm first in your PATH, run:
-
-```sh
-  echo 'export PATH="/opt/homebrew/opt/llvm/bin:$PATH"' >> ~/.zshrc
-```
-
-For compilers to find llvm you may need to set:
-
-```sh
-  export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
-  export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
-```
-
-For cmake to find llvm you may need to set:
-
-```sh
-  export CMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm"
-```
-
-All that's helpful. I just dumped this into my .zshrc file:
-
-```sh
-# Some stuff for MacOS custome clang:
+# @BEGIN@ Some stuff for MacOS to use a custom clang
 if [[ -d /opt/homebrew/opt/llvm/bin ]] ; then
   export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
   export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
   export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
   export CMAKE_PREFIX_PATH="/opt/homebrew/opt/llvm"
 fi
+# @END@ Some stuff for MacOS to use a custom clang
 ```
-
-### End Homebrew output
 
 But here's what else you have to do:
 
@@ -87,7 +32,7 @@ Set `~/.conan2/global.conf`:
 # core:non_interactive = True
 # some tools.xxx config also possible, though generally better in profiles
 # tools.android:ndk_path = my/path/to/android/ndk
-tools.cmake:configure_args = ['-DCMAKE_PREFIX_PATH=/opt/homebrew/opt/llvms']
+tools.cmake:configure_args = ['-DCMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm']
 tools.build:compiler_executables = {'c': '/opt/homebrew/opt/llvm/bin/clang', 'cpp': '/opt/homebrew/opt/llvm/bin/clang++'}
 ```
 

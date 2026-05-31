@@ -4,8 +4,15 @@
 
 I'm trying out C++23 and modules (including 'import std;') across GCC, Clang (on
 Mac!), and MSVC. Currently, it appears to be working on macOs with LLVM 22
-(custom installed). I'm headed over to Windows to try it on MSVC and in Debian
-WSL...
+(custom installed), Linux (Debian) with a 'from source' build of GCC 16.1, and
+Visual Studio 2026 Community Edition compilers.
+
+There's a single big mess that the 'import std;' work leaves as an exersize for
+the user: How to manage the _vendor-specific_ "Binary Module Interface" (BMI).
+So, since I got the basics working, I'm going to try to add a per-user BMI so
+that, as long as you've got the correct compiler installed, you shouldn't have
+to do anything else. I'm going to put them in
+`${Platform Cache Location}/cpp.module.cache`.
 
 Here are some articles I'm using to get this up and going:
 
