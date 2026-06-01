@@ -1,5 +1,5 @@
 #!/bin/bash
 # This let's me override CMake's moduler-mapper file with GCC's module-mapper server
 REAL_GCC="/usr/local/gcc-16/bin/g++"
-exec "$REAL_GCC" "$@" -fmodule-mapper="|@g++-mapper-server -r $HOME/.gcm-cache"
+exec "$REAL_GCC" "$@" -fmodule-mapper="|@g++-mapper-server -r $HOME/.cache/cpp.module.cache"
 

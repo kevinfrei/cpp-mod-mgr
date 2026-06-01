@@ -2,6 +2,7 @@ import { isDefined } from '@freik/typechk';
 import os from 'node:os';
 import { os_handler } from './mod-types';
 import { darwin } from './module-darwin';
+import { linux } from './module-linux';
 import { win32 } from './module-win32';
 
 // This thing exists because the standards body was too hamstrung by legacy
@@ -15,21 +16,10 @@ import { win32 } from './module-win32';
 // 'default' toolchain supports "import std;" so I've also had to mess with
 // Conan & CMake configuration to use a custom installed toolchain.
 
-/*
-
-function linux(): os_handler {
-  async function cache_loc(): Promise<string> {
-    const cacheHome = process.env.XDG_CACHE_HOME || join(process.env.HOME, ".cache");
-    const dir = join(cacheHome, cache_name);
-    await $`mkdir -p ${dir}`
-    return dir;
-  }
-}
-*/
-
 const handlers: Map<string, os_handler> = new Map([
   ['darwin', darwin()],
   ['win32', win32()],
+  ['linux', linux()],
 ]);
 
 function showUsage() {
