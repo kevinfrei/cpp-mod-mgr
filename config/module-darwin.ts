@@ -74,11 +74,11 @@ set(STD_COMPAT_BMI_LOC "${join(cache_p, compat_bmi_n)}")
     );
   }
   return {
-    config,
-    cache_loc,
-    build_std,
-    build_std_compat,
-    check_bmi_presence,
+    machineConfig: config,
+    cacheLocation: cache_loc,
+    buildStd: build_std,
+    buildStdCompat: build_std_compat,
+    checkModule: check_bmi_presence,
     clean,
     cmake,
   };

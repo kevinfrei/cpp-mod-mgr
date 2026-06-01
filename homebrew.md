@@ -1,8 +1,9 @@
 ## Here's the info from homebrew
+
 Specifically this comes from `homebrew install llvm`
 
-CLANG_CONFIG_FILE_SYSTEM_DIR: /opt/homebrew/etc/clang
-CLANG_CONFIG_FILE_USER_DIR: ~/.config/clang
+CLANG_CONFIG_FILE_SYSTEM_DIR: `/opt/homebrew/etc/clang`
+CLANG_CONFIG_FILE_USER_DIR: `${HOME}/.config/clang`
 
 LLD is now provided in a separate formula: `brew install lld`
 

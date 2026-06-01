@@ -2,8 +2,7 @@
 
 First, `brew install llvm`. LLVM is a "keg-only" installation. You have to
 trigger its usage manually. Currently, here's the output of the installation
-command, just to have it around:
-[Homebrew Output](homebrew.md)
+command, just to have it around: [Homebrew Output](homebrew.md)
 
 That's stuff's got all the details.
 
@@ -76,3 +75,6 @@ then you add these two items to your compilation flags:
 ```
 -fmodule-file=std=/opt/homebrew/opt/llvm/share/libc++/v1/std.pcm -fmodule-file=std.compat=/opt/homebrew/opt/llvm/share/libc++/v1/std.compat.pcm
 ```
+
+I'm in the process of getting all this stuff (except the LLVM installation
+itself) automated in a script.

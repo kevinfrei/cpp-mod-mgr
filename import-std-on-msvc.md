@@ -26,3 +26,6 @@ Static Lib/Static Debug Lib, and DLL, Debug DLL.
 Then you have to add
 `/reference "std=$ENV{VCToolsInstallDir}modules\\MTd\\std.ifc"` as a compile
 options (replace MTd with your C++ preferred runtime flavor).
+
+Because this is still messy (it's messy in different ways from GCC & Clang,
+conveniently enough), I'm trying to automate everything in a script.

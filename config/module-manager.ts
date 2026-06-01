@@ -35,13 +35,46 @@ function linux(): os_handler {
 
 const handlers: Map<string, os_handler> = new Map([['darwin', darwin()]]);
 
+function showUsage() {
+  console.log('Usage: bun [run] mod <command>');
+  console.log('Valid command values:');
+  console.log(
+    'build (-f)',
+    '\n\tBuilds both the std and std.compat BMI, puts them in the cache',
+    "\n\tUse -f to force the removal and rebuild of the BMI's",
+  );
+  console.log(
+    'cache:',
+    '\n\tPrint the location of the BMI cache (Binary Module Interface)',
+  );
+  console.log('clean:', '\n\tEmpty and remove the BMI cache');
+  console.log(
+    'cmake (-f) <config/mod_config.cmake>',
+    '\n\tWrite the CMake configuration file if not already there.',
+    '\n\tUse -f to force overwriting an existing file',
+  );
+  console.log(
+    'config',
+    '\n\tConfigure the machine however necessary (and provide diagnostics)',
+  );
+}
+
 function check(name: string, res: true | string[]): number {
   if (res === true) {
     return 0;
   }
-  console.error('errors occurred when attempting to run', name);
+  console.error('Errors occurred when attempting to run', name);
   res.forEach((v) => console.error(v));
   return -1;
+}
+
+// Check to see if we have a '-f' before an argument
+function getArg(args: string[]): [boolean, string | false] {
+  if (args.length < 2 || args.length !== (args[1] === '-f' ? 3 : 2)) {
+    return [false, false];
+  }
+  const force = args[1] === '-f';
+  return [force, args[force ? 2 : 1]];
 }
 
 async function main(): Promise<number> {
@@ -53,92 +86,39 @@ async function main(): Promise<number> {
   }
   switch (args[0]) {
     case 'build': {
-      const std_res = await handler.build_std();
-      if (handler.build_std_compat) {
-        await handler.build_std_compat();
+      const std = await handler.buildStd();
+      const num = check('build [std]', std);
+      let compat: boolean | string[] = false;
+      if (handler.buildStdCompat) {
+        compat = await handler.buildStdCompat();
       }
-      break;
+      const cNum = compat === false ? -1 : check('build [compat]', compat);
+      return num === 0 ? cNum : num;
     }
     case 'cache': {
-      console.log('Binary Module Interface cache location:');
-      console.log(await handler.cache_loc());
-      break;
-    }
-    case 'check_std': {
-      const [std] = await handler.check_bmi_presence();
-      if (std.length === 0) {
-        throw new Error('No BMI found for std!');
-      }
-      break;
-    }
-    case 'check_compat': {
-      const [, compat] = await handler.check_bmi_presence();
-      if (!compat) {
-        throw new Error('No BMI found for std.compat!');
-      }
+      console.log(await handler.cacheLocation());
       break;
     }
     case 'clean': {
       await handler.clean();
-      break;
+      return 0;
     }
     case 'cmake': {
-      if (args.length < 2 || args.length !== (args[1] === '-f' ? 3 : 2)) {
-        throw new Error('Missing file destination for "bun mod cmake" command');
+      const [force, arg] = getArg(args);
+      if (arg === false) {
+        showUsage();
+        return -1;
       }
-      const force = args[1] === '-f';
-      await handler.cmake(force, args[force ? 2 : 1]);
+      await handler.cmake(force, arg);
       break;
     }
     case 'config': {
-      const cfg_res = await handler.config();
+      const cfg_res = await handler.machineConfig();
       return check('config', cfg_res);
     }
-    case 'demand_std': {
-      let [std] = await handler.check_bmi_presence();
-      if (std.length === 0) {
-        const res = await handler.build_std();
-        [std] = await handler.check_bmi_presence();
-        if (std.length === 0) {
-          console.error('Unable to build the std BMI');
-        }
-      }
+    default:
+      showUsage();
       break;
-    }
-    case 'demand_compat': {
-      const [, compat] = await handler.check_bmi_presence();
-      if (!compat) {
-        if (handler.build_std_compat) {
-          await handler.build_std_compat();
-        } else {
-          throw new Error('Unable to build std.compat on this platform');
-        }
-      }
-      break;
-    }
-    default: {
-      console.log('Usage: bun [run] mod <command>');
-      console.log('Valid command values:');
-      console.log(
-        'build (-f)',
-        '\n\tBuilds both the std and std.compat BMI, puts them in the cache',
-        "\n\tUse -f to force the removal and rebuild of the BMI's",
-      );
-      console.log(
-        'cmake (-f) config/modconfig.cmake',
-        '\n\tWrite the CMake configuration file if not already there.',
-        '\n\tUse -f to force overwriting an existing file',
-      );
-      console.log(
-        'config',
-        '\n\tConfigure the machine however necessary (and provide diagnostics)',
-      );
-      console.log(
-        'cache:',
-        '\n\tPrint the location of the BMI cache (Binary Module Interface)',
-      );
-      console.log('clean:', '\n\tEmpty and remove the BMI cache');
-    }
   }
   return 0;
 }

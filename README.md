@@ -9,9 +9,9 @@ Visual Studio 2026 Community Edition compilers.
 
 There's a single big mess that the 'import std;' work leaves as an exersize for
 the user: How to manage the _vendor-specific_ "Binary Module Interface" (BMI).
-So, since I got the basics working, I'm going to try to add a per-user BMI so
-that, as long as you've got the correct compiler installed, you shouldn't have
-to do anything else. I'm going to put them in
+So, since I got the basics working, I'm adding a per-user BMI cache so that, as
+long as you've got the correct compiler installed, you shouldn't have to do
+anything else. I'm going to put them in
 `${Platform Cache Location}/cpp.module.cache`.
 
 Here are some articles I'm using to get this up and going:

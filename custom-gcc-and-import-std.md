@@ -23,3 +23,6 @@ Once you've got that built, this repo has all the weirdness you have to use
 built in. Specifically, I created a wrapper around `g++` so that it will have
 the final say for the `-fmodule-mapper=` flag, which enables using the GCM cache
 we populated earlier.
+
+I'm in the process of getting all this stuff (except building & installing GCC
+itself) automated in a script.

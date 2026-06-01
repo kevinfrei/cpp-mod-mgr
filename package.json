@@ -30,9 +30,8 @@
     "os": "bun run config/os.ts",
     "prepare": "bunx simple-git-hooks",
     "****": "Stuff related to modules:",
-    "mod_help": "bun run config/module-manager.ts help",
     "mod_cfg": "bun run config/module-manager.ts config",
-    "mod_bld": "bun run config/module-manager.ts demand_std",
+    "mod_bld": "bun run config/module-manager.ts build",
     "mod_cmake": "bun run config/module-manager.ts cmake config/mod_cfg.cmake",
     "mod": "bun run config/module-manager.ts"
   },
@@ -41,7 +40,10 @@
     "pre-push": "bun run test"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json}": [
+    ".prettierrc": [
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx,json,md}": [
       "prettier --write"
     ],
     "*.cmake": [
