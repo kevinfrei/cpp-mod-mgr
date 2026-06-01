@@ -2,6 +2,7 @@ import { isDefined } from '@freik/typechk';
 import os from 'node:os';
 import { os_handler } from './mod-types';
 import { darwin } from './module-darwin';
+import { win32 } from './module-win32';
 
 // This thing exists because the standards body was too hamstrung by legacy
 // mentality to tell the compiler vendors that the binary-module-interface
@@ -15,13 +16,6 @@ import { darwin } from './module-darwin';
 // Conan & CMake configuration to use a custom installed toolchain.
 
 /*
-function win32(): os_hander {
-  async function cache_loc(): Promise<string> {
-    const dir = join(process.env.LOCALAPPDATA || '', cache_name);
-    await $`mkdir -p ${dir}`;
-    return dir;
-  }
-}
 
 function linux(): os_handler {
   async function cache_loc(): Promise<string> {
@@ -33,7 +27,10 @@ function linux(): os_handler {
 }
 */
 
-const handlers: Map<string, os_handler> = new Map([['darwin', darwin()]]);
+const handlers: Map<string, os_handler> = new Map([
+  ['darwin', darwin()],
+  ['win32', win32()],
+]);
 
 function showUsage() {
   console.log('Usage: bun [run] mod <command>');

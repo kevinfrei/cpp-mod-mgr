@@ -19,10 +19,7 @@ if(MSVC)
   )
   add_compile_options(/EHsc /W4 /std:c++latest)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_options(
-      /reference
-      "std=$ENV{VCToolsInstallDir}modules\\MTd\\std.ifc"
-    )
+    add_compile_options(/reference "std=${STATIC_DEBUG_STD_BMI_LOC}")
     # Hey, look, a feature I worked on!
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT EditAndContinue)
     set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDebug)
@@ -33,10 +30,7 @@ if(MSVC)
     add_compile_options(/Od /ZI /FS)
     add_link_options(/DEBUG:FULL /PROFILE)
   else()
-    add_compile_options(
-      /reference
-      "std=$ENV{VCToolsInstallDir}modules\\MT\\std.ifc"
-    )
+    add_compile_options(/reference "std=${STATIC_STD_BMI_LOC}")
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
     set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
 

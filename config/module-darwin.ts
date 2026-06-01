@@ -15,54 +15,54 @@ export function darwin(): os_handler {
   const xcode_sdk_p =
     '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk';
 
-  async function config(): Promise<true | string[]> {
+  async function machineConfig(): Promise<true | string[]> {
     // TODO: Make this validate the machine configuration:
     // The compiler installation location,
     // Conan's global.conf value
     // Conan's default profile setup
     return ['Not', 'Yet', 'Implemented'];
   }
-  async function cache_loc(): Promise<string> {
+  async function cacheLocation(): Promise<string> {
     await $`mkdir -p ${cache_p}`;
     return cache_p;
   }
-  async function build_std(): Promise<true | string[]> {
+  async function buildStd(overwrite?: boolean): Promise<true | string[]> {
     // Let's make sure the coche is available
-    await cache_loc();
+    await cacheLocation();
     // here's the compile command for the std.pcm
     // Clang calls them "Pre Compiled Modules": pcm suffix
+    const bmi_f = join(cache_p, std_bmi_n);
+    if (!overwrite && (await Bun.file(bmi_f).exists())) {
+      return true;
+    }
     const res =
-      await $`${clang_f} -std=c++23 --precompile ${std_f} -o ${join(cache_p, std_bmi_n)} -isysroot ${xcode_sdk_p} -Wno-reserved-module-identifier`;
+      await $`${clang_f} -std=c++23 --precompile ${std_f} -o ${bmi_f} -isysroot ${xcode_sdk_p} -Wno-reserved-module-identifier`;
     if (res.exitCode === 0) {
       return true;
     }
     return res.text().split('\n');
   }
-  async function build_std_compat(): Promise<true | string[]> {
+  async function buildStdCompat(overwrite?: boolean): Promise<true | string[]> {
     // Let's make sure the coche is available
-    await cache_loc();
+    await cacheLocation();
     // here's the compile command for the std.pcm
     // Clang calls them "Pre Compiled Modules": pcm suffix
+    const bmi_f = join(cache_p, compat_bmi_n);
+    if (!overwrite && (await Bun.file(bmi_f).exists())) {
+      return true;
+    }
     const res =
-      await $`${clang_f} -std=c++23 --precompile ${compat_f} -fmodule-file=std=${join(cache_p, std_bmi_n)} -o ${join(cache_p, compat_bmi_n)} -isysroot ${xcode_sdk_p} -Wno-reserved-module-identifier`;
+      await $`${clang_f} -std=c++23 --precompile ${compat_f} -fmodule-file=std=${join(cache_p, std_bmi_n)} -o ${bmi_f} -isysroot ${xcode_sdk_p} -Wno-reserved-module-identifier`;
     if (res.exitCode === 0) {
       return true;
     }
     return res.text().split('\n');
-  }
-  async function check_bmi_presence(): Promise<[string, string]> {
-    const std = join(join(cache_p, std_bmi_n));
-    const compat = join(join(cache_p, compat_bmi_n));
-    return [
-      (await Bun.file(std).exists()) ? std : '',
-      (await Bun.file(compat).exists()) ? compat : '',
-    ];
   }
   async function clean(): Promise<void> {
-    await $`rm -rf ${await cache_loc()}`;
+    await $`rm -rf ${await cacheLocation()}`;
   }
   async function cmake(overwrite: boolean, dest_f: string): Promise<void> {
-    if (overwrite && (await Bun.file(dest_f).exists())) {
+    if (!overwrite && (await Bun.file(dest_f).exists())) {
       return;
     }
     await Bun.write(
@@ -74,11 +74,10 @@ set(STD_COMPAT_BMI_LOC "${join(cache_p, compat_bmi_n)}")
     );
   }
   return {
-    machineConfig: config,
-    cacheLocation: cache_loc,
-    buildStd: build_std,
-    buildStdCompat: build_std_compat,
-    checkModule: check_bmi_presence,
+    machineConfig,
+    cacheLocation,
+    buildStd,
+    buildStdCompat,
     clean,
     cmake,
   };

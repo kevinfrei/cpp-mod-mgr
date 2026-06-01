@@ -8,11 +8,9 @@ export type os_handler = {
   // Get (and create, if necessary) the path to the BMI cache
   cacheLocation: () => Promise<string>;
   // Build the std BMI
-  buildStd: () => Promise<true | string[]>;
+  buildStd: (overwrite?: boolean) => Promise<true | string[]>;
   // Build the std.compat BMI (if possible: This doesn't work right everywhere)
-  buildStdCompat?: () => Promise<true | string[]>;
-  // Returns a tuple of std.bmi and std.compat.bmi (if they exist)
-  checkModule: () => Promise<[string, string]>;
+  buildStdCompat?: (overwrite?: boolean) => Promise<true | string[]>;
   // Clears the cache entirely
   clean: () => Promise<void>;
   // emit the cmake set expression into the specified file
