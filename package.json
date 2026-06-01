@@ -1,11 +1,15 @@
 {
-  "name": "cppmod",
+  "name": "cpp-mod-mgr",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "usage-1": "cpp-mod-mgr config: Check the configuration (This isn't yet implemented)",
+  "usage-2": "cpp-mod-mgr cmake <output_file.cmake>: Generate CMake configuration file using modules & a custom compiler",
+  "usage-3": "cpp-mod-mgr build: populate the Built Module Intermediate cache with the std and std.compat modules",
   "scripts": {
+    "prepare": "bun simple-git-hooks",
     "cfmt": "passable -i -q \"CMakeLists.txt\" \"src/**/CMakeLists.txt\" \"src/**/*.cmake\" \"config/*.cmake\"",
-    "format": "tools format bun && bun run cfmt",
-    "fmt": "bun run format",
+    "fmt": "tools format bun && bun run cfmt",
+    "format": "bun run fmt",
     "clean": "bun run config/clean.ts",
     "dcfg": "bun run mod_cmake && cmake --preset debug",
     "rcfg": "bun run mod_cmake && cmake --preset release",
@@ -13,10 +17,10 @@
     "dcpp": "bun run mod_bld && cmake --build build/Debug",
     "rcpp": "bun run mod_bld && cmake --build build/Release",
     "cpp": "bun run dcpp && bun run rcpp",
-    "dtst": "bun run dcpp && cd build/Debug && ctest --output-on-failure",
-    "dtest": "bun run dcpp && cd build/Debug && ctest --output-on-failure",
-    "rtst": "bun run rcpp && cd build/Release && ctest",
-    "rtest": "bun run rcpp && cd build/Release && ctest",
+    "dtst": "bun run dcfg && bun run dcpp && cd build/Debug && ctest --output-on-failure",
+    "dtest": "bun run dtst",
+    "rtst": "bun run rcfg && bun run rcpp && cd build/Release && ctest",
+    "rtest": "bun run rtst",
     "tst": "bun run dtst && bun run rtst",
     "test": "bun run tst",
     "drun": "bun run os drun",
@@ -26,18 +30,17 @@
     "drun:def": "./build/Debug/src/cppmod",
     "rrun:def": "./build/Release/src/cppmod",
     "run": "bun run drun && bun run rrun",
-    "*-*": "Helper to do OS-specific things",
+    "***os": "Helper to do OS-specific things",
     "os": "bun run config/os.ts",
-    "prepare": "bunx simple-git-hooks",
-    "****": "Stuff related to modules:",
+    "***mod": "Stuff related to modules:",
     "mod_cfg": "bun run config/module-manager.ts config",
     "mod_bld": "bun run config/module-manager.ts build",
     "mod_cmake": "bun run config/module-manager.ts cmake config/mod_cfg.cmake",
     "mod": "bun run config/module-manager.ts"
   },
   "simple-git-hooks": {
-    "pre-commit": "bunx lint-staged",
-    "pre-push": "bun run test"
+    "pre-commit": "bun lint-staged",
+    "pre-push": "bun run tst"
   },
   "lint-staged": {
     ".prettierrc": [
