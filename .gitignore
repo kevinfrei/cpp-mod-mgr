@@ -52,6 +52,9 @@ Makefile
 install_manifest.txt
 compile_commands.json
 
+# CMake Module support file
+config/mod_cfg.cmake
+
 # Temporary files
 *.tmp
 *.log

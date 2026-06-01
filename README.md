@@ -14,6 +14,14 @@ long as you've got the correct compiler installed, you shouldn't have to do
 anything else. I'm going to put them in
 `${Platform Cache Location}/cpp.module.cache`.
 
+Here are details:
+
+|         |                                                        |
+| ------- | ------------------------------------------------------ |
+| mac     | [Using a custom Clang](custom-clang-and-import-std.md) |
+| linux   | [Using a custom GCC](custom-gcc-and-import-std.md)     |
+| windows | [Using import std](import-std-on-msvc.md)              |
+
 Here are some articles I'm using to get this up and going:
 
 - [Modern C++ Modules Practice](https://www.albertogramaglia.com/modern-cpp-modules-practice/)

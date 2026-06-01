@@ -7,7 +7,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Auto-complete-n-stuff
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 if(MSVC)
   # For windows/VC++, run normal exception handling & windows 10 APIs
   # And for the love of god, turn of the CRT security warnings.
@@ -51,23 +50,19 @@ else()
   # For non-windows compilers, enable sanitizers and stuff
   add_compile_options(-Wpedantic -Wall -Wextra -pedantic)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_options(-O0 -g) # -fsanitize=address,undefined -O0 -g)
-    add_link_options(-O0 -g) # -fsanitize=address,undefined -O0 -g)
+    add_compile_options(-O0 -g) # -fsanitize=address,undefined
+    add_link_options(-O0 -g) # -fsanitize=address,undefined
   else()
     add_compile_options(-flto -O2)
     add_link_options(-flto)
   endif()
   # Define TARGET_OS for the OS-specific code in tools_lib
-  if(UNIX AND NOT APPLE)
+  if(APPLE)
+    add_compile_options("-fmodule-file=std=${STD_BMI_LOC}")
+    add_compile_options("-fmodule-file=std.compat=${STD_COMPAT_BMI_LOC}")
+    set(TARGET_OS macos)
+  elseif(UNIX)
     set(TARGET_OS linux)
     add_compile_options(-fmodules)
-  elseif(APPLE)
-    add_compile_options(
-      "-fmodule-file=std=/opt/homebrew/opt/llvm/share/libc++/v1/std.pcm"
-    )
-    add_compile_options(
-      "-fmodule-file=std.compat=/opt/homebrew/opt/llvm/share/libc++/v1/std.compat.pcm"
-    )
-    set(TARGET_OS macos)
   endif()
 endif()
