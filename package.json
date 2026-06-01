@@ -30,9 +30,11 @@
     "os": "bun run config/os.ts",
     "prepare": "bunx simple-git-hooks",
     "****": "Stuff related to modules:",
-    "mod:help": "bun run config/build-std-modules.ts help",
-    "mod:chk": "bun run config/build-std-modules.ts config",
-    "mod:bld": "bun run config/build-std-modules.ts demand_std"
+    "mod_help": "bun run config/module-manager.ts help",
+    "mod_cfg": "bun run config/module-manager.ts config",
+    "mod_bld": "bun run config/module-manager.ts demand_std",
+    "mod_cmake": "bun run config/module-manager.ts cmake config/mod_cfg.cmake",
+    "mod": "bun run config/module-manager.ts"
   },
   "simple-git-hooks": {
     "pre-commit": "bunx lint-staged",
