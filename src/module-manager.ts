@@ -61,7 +61,7 @@ function getArg(args: string[]): [boolean, string | false] {
     return [false, false];
   }
   const force = args[1] === '-f';
-  return [force, args[force ? 2 : 1]];
+  return [force, args[force ? 2 : 1] as string];
 }
 
 async function main(): Promise<number> {
