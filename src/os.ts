@@ -1,35 +1,37 @@
 // This is a bun-specific replacement for the run-script-os NodeJS thing
 // It takes a script, and invokes the "script:os" command
-// if the script:win/mac/lin command doesn't exist, it falls back to the script:def command
+// if the script:win/mac/lin command doesn't exist, it falls back to the
+// script:def command, which is helpful if you have to do something different
+// for Windows, and the *nixes are the same, for example.
 import {
   chkObjectOf,
   hasFieldType,
   hasStrField,
   isString,
-} from "@freik/typechk";
-import Bun from "bun";
-import fs from "fs/promises";
-import os from "os";
-import path from "path";
+} from '@freik/typechk';
+import Bun from 'bun';
+import fs from 'fs/promises';
+import os from 'os';
+import path from 'path';
 
 const osmap = new Map<string, string>([
-  ["win32", "win"],
-  ["darwin", "mac"],
-  ["linux", "lin"],
+  ['win32', 'win'],
+  ['darwin', 'mac'],
+  ['linux', 'lin'],
 ]);
 
 async function main() {
   // argv[1] is this script's name, so find the package.json file from there
   const pkg = path.resolve(
-    path.join(path.dirname(Bun.argv[1]), "..", "package.json"),
+    path.join(path.dirname(Bun.argv[1] || '.'), '..', 'package.json'),
   );
   const args = Bun.argv.slice(2);
-  const pkgj = JSON.parse(await fs.readFile(pkg, "utf8"));
-  if (!hasFieldType(pkgj, "scripts", chkObjectOf(isString))) {
-    throw new Error("No scripts field in package.json");
+  const pkgj = JSON.parse(await fs.readFile(pkg, 'utf8'));
+  if (!hasFieldType(pkgj, 'scripts', chkObjectOf(isString))) {
+    throw new Error('No scripts field in package.json');
   }
   const scriptName = args[0];
-  const suffix = osmap.get(os.platform()) || "def";
+  const suffix = osmap.get(os.platform()) || 'def';
   const script = `${scriptName}:${suffix}`;
   const scriptdef = `${scriptName}:def`;
   const theScript = hasStrField(pkgj.scripts, script)
@@ -43,7 +45,7 @@ async function main() {
   const cmds = args
     .slice(1)
     .map((v) => Bun.$.escape(v))
-    .join(" ");
+    .join(' ');
   await Bun.$`bun run ${theScript} ${{ raw: cmds }}`;
 }
 

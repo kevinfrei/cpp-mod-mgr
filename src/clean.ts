@@ -1,4 +1,4 @@
-import { $ } from "bun";
+import { $ } from 'bun';
 
 async function Clean(): Promise<void> {
   await $`rm -rf build/Debug`;
