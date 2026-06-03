@@ -1,4 +1,4 @@
-import { isDefined } from '@freik/typechk';
+#!/usr/bin/env bun
 import os from 'node:os';
 import { os_handler } from './mod-types';
 import { darwin } from './module-darwin';
@@ -68,7 +68,7 @@ async function main(): Promise<number> {
   const args = Bun.argv.slice(2);
   const platform = os.platform();
   const handler = handlers.get(platform);
-  if (!isDefined(handler)) {
+  if (handler === undefined) {
     throw new Error(`No handler found for ${platform}`);
   }
   switch (args[0]) {

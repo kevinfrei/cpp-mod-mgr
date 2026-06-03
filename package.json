@@ -32,6 +32,7 @@
     "run": "bun run drun && bun run rrun",
     "typechk": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
+    "build": "bun build --entrypoints src/module-manager.ts --outfile dist/cpp-mod-mgr.js --production --target bun",
     "***os": "Helper to do OS-specific things",
     "os": "bun run src/os.ts",
     "***mod": "Stuff related to modules:",
